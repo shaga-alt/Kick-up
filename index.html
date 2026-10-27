@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+f<button
+  class="btn"
+  onclick="showProfile('${person.name}')"
+>
+  View Full Profile
+</button>function showProfile(name) {
+  const person = celebrities.find(
+    celebrity => celebrity.name === name
+  );
+
+  if (!person) return;
+
+  document.getElementById("celebrityGrid").innerHTML = `
+    <article class="card">
+      <img
+        src="${person.image}"
+        alt="${person.name}"
+        style="height:350px;object-fit:cover"
+      >
+
+      <div class="card-body">
+        <h2>${person.name}</h2>
+        <p>${person.bio}</p>
+
+        <h3>Career</h3>
+        <p>${person.bio}</p>
+
+        <h3>Interests and achievements</h3>
+        <p>
+          Explore this actor's film career, notable roles,
+          awards and public achievements.
+        </p>
+
+        <button class="btn" onclick="renderCelebrities()">
+          ← Back to Celebrities
+        </button>
+      </div>
+    </article>
+  `;
+}<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
