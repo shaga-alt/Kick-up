@@ -3,6 +3,339 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CelebrityLife</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f6fc;
+  color: #172033;
+}
+
+header {
+  background: linear-gradient(120deg, #103ea8, #2878ff);
+  color: white;
+  padding: 25px 6%;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #bcd5ff;
+}
+
+.hero {
+  background: linear-gradient(120deg, #103ea8, #2878ff);
+  color: white;
+  padding: 45px 6%;
+}
+
+.hero h1 {
+  font-size: 38px;
+}
+
+.hero p {
+  line-height: 1.6;
+}
+
+#searchInput {
+  width: 100%;
+  max-width: 600px;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px 6%;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.filter {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background: white;
+  cursor: pointer;
+}
+
+.filter.active,
+.filter:hover {
+  background: #155eef;
+  color: white;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px #00000010;
+}
+
+.card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  background: #dce7fb;
+}
+
+.card-body {
+  padding: 18px;
+}
+
+.card h3 {
+  margin-top: 5px;
+}
+
+.card p {
+  color: #657089;
+  line-height: 1.5;
+}
+
+.btn {
+  display: inline-block;
+  background: #155eef;
+  color: white;
+  padding: 11px 13px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: #103ea8;
+}
+
+#resultCount {
+  color: #657089;
+}
+
+#emptyMessage {
+  display: none;
+  padding: 25px 0;
+}
+
+footer {
+  padding: 25px;
+  text-align: center;
+  color: #657089;
+}
+
+@media (max-width: 500px) {
+  .hero h1 {
+    font-size: 30px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Celebrity<span>Life</span></div>
+</header>
+
+<section class="hero">
+  <h1>Explore the world of celebrities!</h1>
+  <p>
+    Discover famous actors, explore their careers,
+    and visit their IMDb profiles.
+  </p>
+
+  <input
+    id="searchInput"
+    type="search"
+    placeholder="Search celebrities..."
+    aria-label="Search celebrities"
+  >
+</section>
+
+<main>
+  <h2>Featured Celebrities</h2>
+  <p id="resultCount"></p>
+
+  <div class="filters">
+    <button class="filter active" data-filter="All">All</button>
+    <button class="filter" data-filter="Action">Action</button>
+    <button class="filter" data-filter="Comedy">Comedy</button>
+    <button class="filter" data-filter="Drama">Drama</button>
+  </div>
+
+  <div class="grid" id="celebrityGrid"></div>
+
+  <p id="emptyMessage">No celebrities found.</p>
+</main>
+
+<footer>
+  <strong>CelebrityLife</strong>
+  <p>Discover the people behind the fame.</p>
+  <small>
+    Fan-made website. Not affiliated with IMDb or the celebrities.
+  </small>
+</footer>
+
+<script>
+const celebrities = [
+  {
+    name: "Robert Downey Jr.",
+    image: "images/robert-downey-jr.jpg",
+    categories: ["Action", "Comedy", "Drama"],
+    bio: "American actor known for playing Tony Stark / Iron Man.",
+    imdb: "https://www.imdb.com/name/nm0000375/"
+  },
+  {
+    name: "Tom Cruise",
+    image: "images/tom-cruise.jpg",
+    categories: ["Action", "Drama"],
+    bio: "Actor and producer known for Mission: Impossible and Top Gun.",
+    imdb: "https://www.imdb.com/name/nm0000129/"
+  },
+  {
+    name: "Leonardo DiCaprio",
+    image: "images/leonardo-dicaprio.jpg",
+    categories: ["Drama"],
+    bio: "Actor known for Titanic, Inception and The Revenant.",
+    imdb: "https://www.imdb.com/name/nm0000138/"
+  },
+  {
+    name: "Jim Carrey",
+    image: "images/jim-carrey.jpg",
+    categories: ["Comedy", "Drama"],
+    bio: "Actor and comedian known for The Mask and The Truman Show.",
+    imdb: "https://www.imdb.com/name/nm0000120/"
+  },
+  {
+    name: "Arnold Schwarzenegger",
+    image: "images/arnold-schwarzenegger.jpg",
+    categories: ["Action", "Comedy"],
+    bio: "Actor and former professional bodybuilder known for The Terminator.",
+    imdb: "https://www.imdb.com/name/nm0000216/"
+  },
+  {
+    name: "Johnny Depp",
+    image: "images/johnny-depp.jpg",
+    categories: ["Action", "Comedy", "Drama"],
+    bio: "Actor known for playing Captain Jack Sparrow in Pirates of the Caribbean.",
+    imdb: "https://www.imdb.com/name/nm0000136/"
+  }
+];
+
+const grid = document.getElementById("celebrityGrid");
+const searchInput = document.getElementById("searchInput");
+const resultCount = document.getElementById("resultCount");
+const emptyMessage = document.getElementById("emptyMessage");
+
+let activeFilter = "All";
+
+function renderCelebrities() {
+  const search = searchInput.value.toLowerCase().trim();
+
+  const filtered = celebrities.filter(person => {
+    const matchesSearch =
+      (person.name + " " + person.bio)
+      .toLowerCase()
+      .includes(search);
+
+    const matchesFilter =
+      activeFilter === "All" ||
+      person.categories.includes(activeFilter);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  grid.innerHTML = filtered.map(person => `
+    <article class="card">
+      <img
+        src="${person.image}"
+        alt="${person.name}"
+        loading="lazy"
+        onerror="this.style.display='none'"
+      >
+
+      <div class="card-body">
+        <h3>${person.name}</h3>
+        <p>${person.bio}</p>
+
+        <a
+          class="btn"
+          href="${person.imdb}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View IMDb Profile
+        </a>
+      </div>
+    </article>
+  `).join("");
+
+  resultCount.textContent =
+    `Showing ${filtered.length} of ${celebrities.length} celebrities`;
+
+  emptyMessage.style.display =
+    filtered.length ? "none" : "block";
+}
+
+searchInput.addEventListener("input", renderCelebrities);
+
+document.querySelectorAll(".filter").forEach(button => {
+  button.addEventListener("click", () => {
+    activeFilter = button.dataset.filter;
+
+    document.querySelectorAll(".filter").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+    renderCelebrities();
+  });
+});
+
+renderCelebrities();
+</script>
+
+</body>
+</html>shaga-alt-
+│
+├── index.html
+│
+└── images/
+    ├── robert-downey-jr.jpg
+    ├── tom-cruise.jpg
+    ├── leonardo-dicaprio.jpg
+    ├── jim-carrey.jpg
+    ├── arnold-schwarzenegger.jpg
+    └── johnny-depp.jpg<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#155eef">
 <title>CelebrityLife | Explore Celebrities</title>
 
